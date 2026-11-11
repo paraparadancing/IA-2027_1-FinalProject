@@ -218,3 +218,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# VS Code
+.vscode/
+
+# clangd and pybind11
+compile_commands.json
