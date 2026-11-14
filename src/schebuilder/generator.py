@@ -137,9 +137,5 @@ class Group:
     def __hash__(self):
         return hash((self.key_code, self.subject.key_code))
 
-class Schedule:
-    def __init__(self, groups: set[Group]):
-        self.groups = groups
-
-    def __contains__(self, item: Group) -> bool:
-        return item in self.groups
+# An schedule is a list of Groups
+#   e.g. some_schedule = [group_1, group_2, group_3]
