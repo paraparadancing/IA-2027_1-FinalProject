@@ -40,10 +40,12 @@ namespace generator {
             group_python_obj(group_python_object),
             time_blocks(time_blocks)
         {}
+        bool collides(const Group &other) const;
     };
 
     using group_collection = std::vector<Group>;
+    using built_schedule = std::vector<py::handle>;
 
-    std::vector<py::object> generate_valid_schedules(const std::vector<group_collection> &input_groups);
+    std::vector<built_schedule> generate_valid_schedules(const std::vector<group_collection> &input_groups);
     void read_group(const Group &group);
 }

@@ -80,4 +80,9 @@ namespace pybind11 { namespace detail {
 
 PYBIND11_MODULE(generator_backend, m, py::mod_gil_not_used()){
     m.def("read_group", generator::read_group, "A function that prints Group objects in their C++ implementation.");
+    m.def(
+        "generate_valid_schedules",
+        generator::generate_valid_schedules,
+        "A function that finds all valid group combinations from a given list."
+    );
 }

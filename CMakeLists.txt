@@ -20,10 +20,3 @@ pybind11_add_module(
     src/cxx/bindings.cxx
     src/cxx/generator.cxx
 )
-
-add_custom_command(TARGET generator_backend POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E env "PYTHONPATH=$<TARGET_FILE_DIR:generator_backend>"
-        "${Python3_EXECUTABLE}" -m pybind11_stubgen generator_backend
-        -o "$<TARGET_FILE_DIR:generator_backend>"
-    COMMENT "Generando stubs .pyi para Pyrefly"
-)
