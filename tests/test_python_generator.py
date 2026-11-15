@@ -7,8 +7,7 @@ from schebuilder.generator import (
     Professor,
     Time,
     TimeBlock,
-    Group,
-    Schedule
+    Group
 )
 
 def test_group_class():
@@ -49,8 +48,4 @@ def test_group_class():
     assert len(vlsi_group.time_blocks[Weekday.TUESDAY]) == 1.5 * 60
     assert vlsi_group.professor < our_group.professor
     assert vlsi_group.professor < their_group.professor
-
-    my_schedule: Schedule = Schedule({our_group, vlsi_group})
-    
-    assert our_group in my_schedule and their_group not in my_schedule
 

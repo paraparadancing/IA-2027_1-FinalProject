@@ -2,3 +2,5 @@ PySide6>=6.12.0
 pytest>=9.2.0
 pybind11>=3.1.0
 pyDatalog>=0.22.4
+cmake>=4.4.4
+pybind11-stubgen>=3.0.0
