@@ -1,11 +1,9 @@
 
-from src.schebuilder.filter import FiltroHorarios
+from schebuilder.filter import FiltroHorarios
 
-from src.schebuilder.generator import (
+from schebuilder.generator import (
     Weekday,
     ClassType,
-    Subject,
-    Professor,
     Time,
     TimeBlock,
     Group
@@ -17,8 +15,8 @@ def crear_grupo(codigo, horarios):
     Crea un grupo utilizando las clases del generador.
     """
 
-    materia = Subject(101, ClassType.THEORY)
-    profesor = Professor("Profesor de prueba", 9.0)
+    materia = 101
+    profesor = "Profesor de prueba"
 
     bloques = {}
 

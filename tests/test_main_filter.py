@@ -1,10 +1,8 @@
 
-from src.schebuilder.main import procesar_grupos
+from schebuilder.main import procesar_grupos
 
-from src.schebuilder.generator import (
+from schebuilder.generator import (
     Group,
-    Subject,
-    Professor,
     ClassType,
     Weekday,
     Time,
@@ -14,8 +12,8 @@ from src.schebuilder.generator import (
 
 def test_integracion_main():
 
-    materia = Subject(101, ClassType.THEORY)
-    profesor = Professor("Profesor A", 9.0)
+    materia = 101
+    profesor = "Profesor A"
 
     grupo1 = Group(
         1, materia, profesor,
