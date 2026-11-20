@@ -1,9 +1,7 @@
 import generator_backend
 
 from schebuilder.generator import (
-    Subject,
     ClassType,
-    Professor,
     TimeBlock,
     Time,
     Weekday,
@@ -11,24 +9,24 @@ from schebuilder.generator import (
 )
 
 # First AI group
-ai: Subject = Subject(406, ClassType.THEORY)
-camacho: Professor = Professor("DR. JOSE JAIME CAMACHO ESCOTO", 10.0)
+ai = 406
+camacho = "DR. JOSE JAIME CAMACHO ESCOTO"
 our_ai_time_block: TimeBlock = TimeBlock(start=Time(13, 00), end=Time(15, 00))
 our_ai_datetime= {Weekday.MONDAY: our_ai_time_block, Weekday.WEDNESDAY: our_ai_time_block}
 our_group: Group = Group(2, ai, camacho, our_ai_datetime)
 # Second AI group
-mureddu: Professor = Professor("ING. RODRIGO ARAGON MUREDDU", 8.0)
+mureddu = "ING. RODRIGO ARAGON MUREDDU"
 their_ai_time_block: TimeBlock = TimeBlock(start=Time(15, 00), end=Time(17, 00))
 their_ai_datetime = {Weekday.MONDAY: their_ai_time_block, Weekday.WEDNESDAY: their_ai_time_block}
 their_group: Group = Group(4, ai, mureddu, their_ai_datetime)
 # First VLSI group
-vlsi: Subject = Subject(1535, ClassType.THEORY)
-prieto: Professor = Professor("M.I. RAFAEL PRIETO MELENDEZ", 7.5)
+vlsi = 1535
+prieto = "M.I. RAFAEL PRIETO MELENDEZ"
 vlsi_1_time_block: TimeBlock = TimeBlock(start=Time(17, 30), end=Time(19, 00))
 vlsi_1_datetime = {Weekday.TUESDAY: vlsi_1_time_block, Weekday.THURSDAY: vlsi_1_time_block}
 vlsi_group: Group = Group(4, vlsi, prieto, vlsi_1_datetime)
 # Second VLSI group
-abraham: Professor = Professor("DR. ABRAHAM PEREZ ALONZO", 9)
+abraham = "DR. ABRAHAM PEREZ ALONZO"
 vlsi_2_time_block: TimeBlock = TimeBlock(start=Time(9, 0), end=Time(10, 30))
 vlsi_2_datetime = {Weekday.MONDAY: vlsi_2_time_block, Weekday.THURSDAY: vlsi_2_time_block}
 vlsi_group_2: Group = Group(1, vlsi, abraham, vlsi_2_datetime)
