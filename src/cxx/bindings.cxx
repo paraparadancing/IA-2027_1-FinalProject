@@ -83,6 +83,31 @@ PYBIND11_MODULE(generator_backend, m, py::mod_gil_not_used()){
     m.def(
         "generate_valid_schedules",
         generator::generate_valid_schedules,
-        "A function that finds all valid group combinations from a given list."
-    );
+R"doc(Find all valid schedules from a list of categorized groups.
+
+Given a list of group categories, builds every schedule that takes
+exactly one group from each category, such that no two groups in a
+schedule overlap. The search is performed with a DFS over categories
+with constraint pruning (overlapping candidates are skipped early).
+
+Internally, a mirror structure of the input is built to drive the
+search; the returned schedules are assembled as vectors of Python
+references to the original Group objects, so each schedule element is
+the very same object that was passed in.
+
+Args:
+    input_groups: A list of group lists (one list per category),
+        i.e. ``list[list[Group]]``. Order of categories determines
+        the order of groups within each resulting schedule.
+
+Returns:
+    A list of valid schedules, each a ``list[Group]`` with one group
+    per input category, in category order. Empty if no combination
+    satisfies the non-overlap constraint.
+
+Example:
+    >>> schedules = generate_valid_schedules([groupsA, groupsB, groupsC])
+    >>> schedules[0]
+    [group_a1, group_b1, group_c2]   # all pairwise non-overlapping
+)doc");
 }

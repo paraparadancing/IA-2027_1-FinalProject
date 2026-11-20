@@ -1,7 +1,8 @@
+import re
+
 import generator_backend
 
 from schebuilder.generator import (
-    ClassType,
     TimeBlock,
     Time,
     Weekday,
@@ -9,37 +10,49 @@ from schebuilder.generator import (
 )
 
 # First AI group
-ai = 406
-camacho = "DR. JOSE JAIME CAMACHO ESCOTO"
 our_ai_time_block: TimeBlock = TimeBlock(start=Time(13, 00), end=Time(15, 00))
 our_ai_datetime= {Weekday.MONDAY: our_ai_time_block, Weekday.WEDNESDAY: our_ai_time_block}
-our_group: Group = Group(2, ai, camacho, our_ai_datetime)
+our_group: Group = Group(2, 406, "DR. JOSE JAIME CAMACHO ESCOTO", our_ai_datetime)
 # Second AI group
 mureddu = "ING. RODRIGO ARAGON MUREDDU"
 their_ai_time_block: TimeBlock = TimeBlock(start=Time(15, 00), end=Time(17, 00))
 their_ai_datetime = {Weekday.MONDAY: their_ai_time_block, Weekday.WEDNESDAY: their_ai_time_block}
-their_group: Group = Group(4, ai, mureddu, their_ai_datetime)
+their_group: Group = Group(4, 406, mureddu, their_ai_datetime)
 # First VLSI group
-vlsi = 1535
-prieto = "M.I. RAFAEL PRIETO MELENDEZ"
 vlsi_1_time_block: TimeBlock = TimeBlock(start=Time(17, 30), end=Time(19, 00))
 vlsi_1_datetime = {Weekday.TUESDAY: vlsi_1_time_block, Weekday.THURSDAY: vlsi_1_time_block}
-vlsi_group: Group = Group(4, vlsi, prieto, vlsi_1_datetime)
+vlsi_group: Group = Group(4, 1535, "M.I. RAFAEL PRIETO MELENDEZ", vlsi_1_datetime)
 # Second VLSI group
-abraham = "DR. ABRAHAM PEREZ ALONZO"
 vlsi_2_time_block: TimeBlock = TimeBlock(start=Time(9, 0), end=Time(10, 30))
 vlsi_2_datetime = {Weekday.MONDAY: vlsi_2_time_block, Weekday.THURSDAY: vlsi_2_time_block}
-vlsi_group_2: Group = Group(1, vlsi, abraham, vlsi_2_datetime)
+vlsi_group_2: Group = Group(1, 1535, "DR. ABRAHAM PEREZ ALONZO", vlsi_2_datetime)
 # Third VLSI group
 vlsi_3_time_block: TimeBlock = TimeBlock(start=Time(13, 0), end=Time(14, 30))
 vlsi_3_datetime = {Weekday.MONDAY: vlsi_3_time_block, Weekday.WEDNESDAY: vlsi_3_time_block}
-vlsi_group_3: Group = Group(2, vlsi, abraham, vlsi_3_datetime)
+vlsi_group_3: Group = Group(2, 1535, "DR. ABRAHAM PEREZ ALONZO", vlsi_3_datetime)
 
+ADDRESS_RE = re.compile(r"0x[0-9a-f]+")
 
-def test_backend_import():    
-    generator_backend.read_group(our_group)
-    generator_backend.read_group(their_group)
-    generator_backend.read_group(vlsi_group)
+def normalize(text: str) -> str:
+    """Replace memory addresses so output comparisons are deterministic."""
+    return ADDRESS_RE.sub("0xADDR", text)
+
+def test_backend_group_repr_and_str(capsys):
+    print(repr(our_group))
+    print(str(our_group))
+    out = normalize(capsys.readouterr().out)
+
+    expected_repr = "<schebuilder.generator.Group object at 0xADDR>"
+    assert out.splitlines()[0] == expected_repr
+
+    expected_str = "\n".join([
+        "Group keycode: 2",
+        "Subject keycode: 406",
+        "Professor: DR. JOSE JAIME CAMACHO ESCOTO",
+        "Time blocks: "
+        "{<Weekday.MONDAY: 1>: [13:0, 15:0], <Weekday.WEDNESDAY: 3>: [13:0, 15:0]}",
+    ])
+    assert out.splitlines()[1:] == expected_str.splitlines()
 
 def test_backend_generator():
     valid_schedules = generator_backend.generate_valid_schedules(
