@@ -119,7 +119,7 @@ class Group:
     def __hash__(self):
         return hash((self.key_code, self.subject_key))
 
-    def __repr__(self):
+    def __str__(self):
         return (
             f"Group keycode: {self.key_code}\n"
             f"Subject keycode: {self.subject_key}\n"
