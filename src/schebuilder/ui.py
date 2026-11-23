@@ -5,15 +5,15 @@ from html import escape
 from math import ceil
 from pathlib import Path
 
-from PySide6.QtCore import QIODevice, QSaveFile, Qt
+from PySide6.QtCore import QIODevice, QSaveFile, Qt, QTime
 from PySide6.QtGui import (
     QColor, QImage, QPageLayout, QPageSize, QPainter, QPdfWriter, QTextDocument,
 )
 from PySide6.QtWidgets import (
-    QAbstractItemView, QApplication, QDialog, QFileDialog, QHBoxLayout,
-    QHeaderView, QLabel, QLineEdit, QListWidget, QMenu, QMessageBox,
-    QPlainTextEdit, QPushButton, QTableWidget, QTableWidgetItem,
-    QVBoxLayout, QWidget,
+    QAbstractItemView, QApplication, QCheckBox, QDialog, QFileDialog,
+    QHBoxLayout, QHeaderView, QLabel, QLineEdit, QListWidget, QMenu,
+    QMessageBox, QPlainTextEdit, QPushButton, QTableWidget,
+    QTableWidgetItem, QTimeEdit, QVBoxLayout, QWidget,
 )
 
 from generator_backend import generate_valid_schedules
@@ -133,6 +133,24 @@ QTableWidget, QListWidget, QPlainTextEdit, QLineEdit {
     selection-background-color: #365d86;
     selection-color: white;
 }
+QTimeEdit, QTimeEdit QLineEdit {
+    background-color: white;
+    color: #152c42;
+    selection-background-color: #254d74;
+    selection-color: white;
+}
+QTimeEdit {
+    border: 1px solid #9babbc;
+    border-radius: 5px;
+    padding: 4px;
+}
+QTimeEdit:focus {
+    border: 1px solid #254d74;
+}
+QTimeEdit:disabled, QTimeEdit:disabled QLineEdit {
+    background-color: #edf1f5;
+    color: #556575;
+}
 QTableWidget {
     gridline-color: #e0e6ed;
 }
@@ -198,7 +216,7 @@ def export_schedule(table, details, title, path, extension):
     )
     rows = ["<tr>" + header_cells + "</tr>"]
 
-    # A class spanning several time slots is written once, at its first row.
+    # Write each class once, even when its cell spans several time slots.
     occupied_until = [0] * len(headers)
     for row in range(table.rowCount()):
         cells = []
@@ -300,9 +318,75 @@ class ScheduleWindow(QWidget):
 
         self.rules_input = QPlainTextEdit()
         self.rules_input.setPlaceholderText(
-            "Monday 13:00-15:00\nFriday 08:00-10:00"
+            "Daily 13:00-15:00\nFriday 08:00-10:00"
         )
         self.rules_input.setMaximumHeight(85)
+
+        weekdays = QHBoxLayout()
+        day_boxes = {}
+        for day in Weekday:
+            box = QCheckBox(day.name[:3].title())
+            day_boxes[day] = box
+            weekdays.addWidget(box)
+
+        every_day = QPushButton("Select all days")
+
+        def select_all_days():
+            for box in day_boxes.values():
+                box.setChecked(True)
+
+        every_day.clicked.connect(select_all_days)
+        weekdays.addWidget(every_day)
+
+        interval = QHBoxLayout()
+        start_time = QTimeEdit(QTime(13, 0))
+        end_time = QTimeEdit(QTime(15, 0))
+        all_day = QCheckBox("All day free")
+
+        for label, edit in (("From", start_time), ("To", end_time)):
+            edit.setDisplayFormat("HH:mm")
+            interval.addWidget(QLabel(label))
+            interval.addWidget(edit)
+            all_day.toggled.connect(edit.setDisabled)
+
+        interval.addWidget(all_day)
+        add_block = QPushButton("Add block")
+        interval.addWidget(add_block)
+
+        def add_time_block():
+            selected = [
+                day.name.title()
+                for day, box in day_boxes.items()
+                if box.isChecked()
+            ]
+            if not selected:
+                QMessageBox.warning(self, "Choose days", "Select at least one day.")
+                return
+
+            period = "all day"
+            if not all_day.isChecked():
+                if start_time.time() >= end_time.time():
+                    QMessageBox.warning(
+                        self, "Invalid interval",
+                        "Choose an end time after the start.",
+                    )
+                    return
+                period = f"{start_time.text()}-{end_time.text()}"
+
+            if len(selected) == len(Weekday):
+                selected = ["Daily"]
+
+            existing = set(self.rules_input.toPlainText().splitlines())
+            for day in selected:
+                line = f"{day} {period}"
+                if line not in existing:
+                    self.rules_input.appendPlainText(line)
+
+            for box in day_boxes.values():
+                box.setChecked(False)
+            all_day.setChecked(False)
+
+        add_block.clicked.connect(add_time_block)
 
         generate_button = QPushButton("Generate schedules")
         generate_button.setObjectName("primary")
@@ -312,7 +396,10 @@ class ScheduleWindow(QWidget):
         layout.addWidget(QLabel("Loaded subjects"))
         layout.addWidget(self.file_list)
         layout.addLayout(buttons)
-        layout.addWidget(QLabel("Unavailable times (one rule per line)"))
+        layout.addWidget(QLabel("Unavailable times"))
+        layout.addLayout(weekdays)
+        layout.addLayout(interval)
+        layout.addWidget(QLabel("Active blocks (edit or delete a line to change it)"))
         layout.addWidget(self.rules_input)
         layout.addWidget(generate_button)
 
@@ -332,7 +419,9 @@ class ScheduleWindow(QWidget):
                 continue
 
             if not groups:
-                QMessageBox.warning(self, "Empty subject", f"No valid groups in {path.name}.")
+                QMessageBox.warning(
+                    self, "Empty subject", f"No valid groups in {path.name}."
+                )
                 continue
 
             self.subjects[path] = groups
@@ -354,17 +443,25 @@ class ScheduleWindow(QWidget):
         for number, line in enumerate(self.rules_input.toPlainText().splitlines(), start=1):
             if not line.strip():
                 continue
+
             try:
                 day, interval = line.split(maxsplit=1)
-                start, end = interval.split("-")
-                rule = FiltroHorarios(day, start.strip(), end.strip())
+                if interval.strip().casefold() == "all day":
+                    start, end = "00:00", "23:59"
+                else:
+                    start, end = interval.split("-")
+
+                days = list(Weekday) if day.casefold() == "daily" else [day]
+                for selected_day in days:
+                    rule = FiltroHorarios(selected_day, start.strip(), end.strip())
+                    subjects = rule.filtrar_materias(subjects)
+
             except ValueError:
                 QMessageBox.warning(
                     self, "Invalid rule",
                     f"Check line {number}: {line}\nExample: Monday 13:00-15:00.",
                 )
                 return
-            subjects = rule.filtrar_materias(subjects)
 
         for path, groups in zip(self.subjects, subjects):
             if not groups:
