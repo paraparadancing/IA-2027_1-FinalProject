@@ -3,14 +3,14 @@ requires = ["scikit-build-core", "pybind11"]
 build-backend = "scikit_build_core.build"
 
 [project]
-name = "schedule_builder"
+name = "schebuilder"
 version = "0.1.0"
 description = "Automatic schedule generator and filter using constrain-satisfaction DFS and logical reasoning."
 readme = "README.md"
-dependencies = []
-
-[project.scripts]
-schebuilder = "schedule_builder.main:cli"
+dependencies = [
+    "pyDatalog",
+    "PySide6"
+]
 
 [tool.pytest.ini_options]
 pythonpath = ["src", "build"]
@@ -18,3 +18,9 @@ testpaths = ["tests"]
 
 [tool.pyrefly]
 search-path = ["src", "build"]
+
+[tool.scikit-build]
+wheel.packages = ["src/schebuilder"]
+
+[project.scripts]
+schebuilder = "schebuilder.main:cli"

@@ -1,19 +1,13 @@
+from schebuilder.ui import main
+
+def cli():
+    main()
+
 if __name__ == "__main__":
-    import runpy
-    import sys
-    from pathlib import Path
+    cli()
 
-    root = Path(__file__).resolve().parents[2]
-    sys.path[:0] = [
-        str(root / "src"),
-        str(root / "build" / "Release"),
-        str(root / "build"),
-    ]
-    runpy.run_module("schebuilder.ui", run_name="__main__")
-    raise SystemExit(0)
-
-from .generator import Group, Weekday, Time
-from .filter import FiltroHorarios
+from schebuilder.generator import Group, Weekday, Time
+from schebuilder.filter import FiltroHorarios
 
 
 def procesar_grupos(

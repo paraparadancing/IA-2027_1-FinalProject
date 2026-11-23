@@ -17,9 +17,9 @@ from PySide6.QtWidgets import (
 )
 
 from generator_backend import generate_valid_schedules
-from .filter import FiltroHorarios
-from .generator import Group, Weekday, get_schedule_details
-from .loader import load_from_csv
+from schebuilder.filter import FiltroHorarios
+from schebuilder.generator import Group, Weekday, get_schedule_details
+from schebuilder.loader import load_from_csv
 
 
 def get_schedule_str(schedule: list[Group]) -> list[list[str]]:
@@ -639,8 +639,11 @@ class ScheduleWindow(QWidget):
         dialog.exec()
 
 
-if __name__ == "__main__":
+def main():
     app = QApplication(sys.argv)
     window = ScheduleWindow()
     window.show()
     sys.exit(app.exec())
+
+if __name__ == "__main__":
+    main()

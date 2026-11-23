@@ -20,3 +20,5 @@ pybind11_add_module(
     src/cxx/bindings.cxx
     src/cxx/generator.cxx
 )
+
+install(TARGETS generator_backend LIBRARY DESTINATION .)

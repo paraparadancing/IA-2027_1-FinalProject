@@ -2,7 +2,7 @@
 from datetime import datetime
 from pyDatalog import pyDatalog
 
-from .generator import Weekday, Time, Group
+from schebuilder.generator import Weekday, Time, Group
 
 
 def convertir_hora(hora):
