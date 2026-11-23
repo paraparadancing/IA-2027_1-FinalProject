@@ -50,7 +50,7 @@ def test_backend_group_repr_and_str(capsys):
         "Subject keycode: 406",
         "Professor: DR. JOSE JAIME CAMACHO ESCOTO",
         "Time blocks: "
-        "{<Weekday.MONDAY: 1>: [13:0, 15:0], <Weekday.WEDNESDAY: 3>: [13:0, 15:0]}",
+        "{<Weekday.MONDAY: 1>: [13:00, 15:00], <Weekday.WEDNESDAY: 3>: [13:00, 15:00]}",
     ])
     assert out.splitlines()[1:] == expected_str.splitlines()
 
