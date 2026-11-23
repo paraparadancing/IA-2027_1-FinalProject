@@ -114,6 +114,9 @@ class FiltroHorarios:
                     minuto_fin
                 ))
 
+        if not registros:
+            return grupos, []
+        
         # Iniciar el motor logico.
         pyDatalog.Logic()
 
@@ -175,3 +178,13 @@ class FiltroHorarios:
                 )
 
         return self.filtrar(grupos, obtener_sesiones)
+
+    def filtrar_materias(self, materias: list[list[Group]]) -> list[list[Group]]:
+        """Filtra los grupos y conserva el orden de las materias."""
+        resultado = []
+
+        for grupos in materias:
+            permitidos, _ = self.filtrar_grupos(grupos)
+            resultado.append(permitidos)
+
+        return resultado
