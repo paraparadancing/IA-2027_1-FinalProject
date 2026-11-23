@@ -1,6 +1,7 @@
 from math import gcd
 from functools import reduce
 from enum import Enum, auto
+from schebuilder.subjects import subject_names
 
 class Weekday(Enum):
     MONDAY = 1
@@ -15,6 +16,7 @@ class ClassType(Enum):
     LABORATORY = auto()
     LABORATORY_PLUS = auto()
 
+SEPARATOR_AMOUNT = 50
 
 class Time:
     """Represents an amount of time (e.g. 2h 15m) or a time of day (e.g. 2:15)."""
@@ -192,3 +194,28 @@ def get_schedule_str(
                     row[col] = str(group.subject_key)
 
     return output
+
+def get_anonymous_subject_name(count: int) -> str:
+    if count < 1:
+        raise ValueError("Argument should be positive number.")
+    result = ""
+    while count > 0:
+        count, remainder = divmod(count - 1, 26)
+        result = chr(ord("A") + remainder) + result
+    return result
+
+def get_schedule_details(schedule: list[Group])-> str:
+    output = []
+    letter_amount = 0
+    for group in schedule:
+        group_name = subject_names.get(group.subject_key)
+        if group_name is None:
+            group_name = get_anonymous_subject_name(letter_amount)
+            letter_amount += 1
+        output.append('\n'.join((
+            f"{group.subject_key} - {group_name}",
+            f"Group: {group.key_code}",
+            f"Professor: {group.professor}"
+        )))
+
+    return f"\n{''.join('-' for r in range(SEPARATOR_AMOUNT))}\n".join(output)

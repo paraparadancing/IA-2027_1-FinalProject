@@ -6,7 +6,8 @@ from schebuilder.generator import (
     Time,
     TimeBlock,
     Group,
-    get_schedule_str
+    get_schedule_str,
+    get_schedule_details
 )
 
 # First AI group
@@ -56,3 +57,19 @@ def test_schedule_print():
         ['18:00', '', '1535', '', '1535', '', ''],
         ['18:30', '', '1535', '', '1535', '', '']
     ]
+
+def test_schedule_details():
+    schedule = [our_group, vlsi_group]
+    schedule_details = get_schedule_details(schedule)
+    assert schedule_details == """406 - INTELIGENCIA ARTIFICIAL
+Group: 2
+Professor: DR. JOSE JAIME CAMACHO ESCOTO
+--------------------------------------------------
+1535 - DISEÑO DIGITAL VLSI
+Group: 4
+Professor: M.I. RAFAEL PRIETO MELENDEZ"""
+
+def test_a():
+    schedule = [our_group, vlsi_group]
+    schedule_details = get_schedule_details(schedule)
+    print(schedule_details)    
